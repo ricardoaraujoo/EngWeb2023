@@ -60,7 +60,7 @@ for key in sorted(distrito.keys()):
         <ul>
     """
     for valor in distrito[key]:
-        d = distrito[key]
+
         pagIndex+= f"""
         <li>
             <a href="http://localhost:7777/{valor['id']}">{valor['nome']}</a>
