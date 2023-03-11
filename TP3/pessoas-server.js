@@ -213,34 +213,50 @@ http.createServer((req,res)=>{
             res.end('<p> Erro na obtenção de dados: ' + erro + '</p>')
    
         })
-       }else if (req.url == "/pessoas/profissoes"){
-           axios.get('http://localhost:3000/pessoas')
-               .then((resp) => {
-                   var pessoas = resp.data
-                   
-                   res.writeHead(200, {'Content-Type':'text/html; charset="utf-8"'})
-                   res.end(my_pages.genWorkPage(pessoas))
-               })
-               .catch( (error) => {
-                   res.writeHead(404, {'Contet-Type': 'text/html; charset="utf-8"'})
-                   res.end("<p>ERRO:T Não foi possível aceder à Base de Dados</p>")
-               })
-       }else if (req.url.match(/pessoas\/profissoes\/.+/)){
-           axios.get('http://localhost:3000/pessoas')
-               .then( (resp) => {
-                   var pessoas = resp.data
-                   let profissao = decodeURI(pedido.substring(20))
-   
-                   var pessoasFiltrado = pessoas.filter( (p) => p.profissao==profissao)
-   
-                   res.writeHead(200, {'Content-Type':'text/html; charset="utf-8"'})
-                   res.end(my_pages.genMainPage(pessoasFiltrado, d))
-               })
-               .catch( (error) => {
-                   res.writeHead(404, {'Contet-Type': 'text/html; charset="utf-8"'})
-                   res.end("<p>ERRO: Não foi possível aceder à Base de Dados</p>")
-               })
-       }        
+    }else if(req.url == '/pessoas/profissoes'){
+        
+        axios.get('http://localhost:3000/pessoas')
+        .then(function(resp){
+            var pessoas = resp.data
+            var dicProf= {}
+            
+            for(let i=0;i<pessoas.length;i++){
+                let p = pessoas[i].profissao
+                console.log(p)
+                if(p in dicProf){
+                    dicProf[p]+=1
+                }else{
+                    dicProf[p] = 1
+                }
+            }
+            var dicSorted = Object.entries(dicProf).sort(([,a],[,b])=> b-a)
+
+            res.writeHead(200,{'Content-Type': 'text/html; charset=utf-8'})
+            res.end(mypages.genWorkPage(dicSorted, d))
+        })
+        .catch(erro => {
+            console.log("Erro: " + erro)
+            res.writeHead(200,{'Content-Type': 'text/html; charset=utf-8'})
+            res.end('<p> Erro na obtenção de dados: ' + erro + '</p>')
+    
+        })
+    }else if(req.url.match(/\/pessoas\/profissoes\/[a-zA-Z ]+/)){
+        var profissao = decodeURI(req.url.substring(20))
+        console.log(profissao)
+        axios.get('http://localhost:3000/pessoas?profissao='+profissao)
+        .then(function(resp){
+            var pessoas = resp.data
+
+            res.writeHead(200,{'Content-Type': 'text/html; charset=utf-8'})
+            res.end(mypages.genMainPage(pessoas, d))
+        })
+        .catch(erro => {
+            console.log("Erro: " + erro)
+            res.writeHead(200,{'Content-Type': 'text/html; charset=utf-8'})
+            res.end('<p> Erro na obtenção de dados: ' + erro + '</p>')
+    
+        })
+    }
 
 
     else{
