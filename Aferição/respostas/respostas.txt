@@ -1,0 +1,8 @@
+1. db.exames.count() => 300 pessoas
+2. db.exames.find({resultado:true}).count() => 138
+3.  db.exames.find({género:'M'}).count() 158 / 300 =
+    db.exames.find({género:'F'}).count() 142 / 300 =
+
+4. 
+5.
+6.
